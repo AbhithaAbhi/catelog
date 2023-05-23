@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block metadescription %}
+            This is the cart. Proceed to review your items and place the order.
+{% endblock %}
+
+{% block title %}
+    Cart - Abc company PVT LTD.
+{% endblock %}
+
+{% block content %}
+{% if not cart_items %}
+<div>
+  <div class="text-center">
+    <br>
+    <h1 class="text-center my_title">
+      Your Shopping Cart is empty.
+    </h1>
+    <br>
+    <p class="text-center">
+      Please click <a href="{% url 'shop:allProdCat' %}">Here</a> to continue shopping.
+    </p>
+  </div>
+</div>
+{% else %}
+<div>
+  <div class="text-center">
+    <br>
+    <h1 class="text-center my_title">
+      Your Shopping Cart
+    </h1>
+    <br>
+  </div>
+</div>
+<div class="row mx-auto">
+  <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-center">
+    <table class="table my_custom_table">
+    <thead class="my_custom_thead">
+    <tr>
+      <th colspan="5">
+        Your Items
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for cart_item in cart_items %}
+    <tr>
+      <td>
+        <a href="{{ cart_item.product.get_absolute_url }}"><img src="{{cart_item.product.image.url}}" style="width:100px;height:100px;" alt="" class="float-left-rounded custom_image"></a>
+      </td>
+      <td class="text-center">
+        {{cart_item.product.name}}
+        <br>
+        SKU: {{cart_item.product.id}}
+        <br>
+        price: $ {{cart_item.product.price}}
+        <br>
+        Qty: {{cart_item.quantity}} x $ {{cart_item}}
+        <br>
+
+        <form method="POST" action="{% url 'cart:cart_detail' %}">
+    {% csrf_token %}
+    <label for="gift_wrap">
+        <input type="checkbox" name="gift_wrap" id="gift_wrap">
+        Gift Wrap
+    </label>
+
+    <button type="submit">Update Cart</button>
+</form>
+      <td>
+        $ {{cart_item.sub_total}}
+      </td>
+
+      {% if cart_item.quantity < cart_item.product.stock %}
+      <td>
+        <a href="{% url 'cart:add_cart' cart_item.product.id %}" class="custom_a"><i class="fa fa-plus custom_icon"></i></a>
+        &nbsp;<a href="{% url 'cart:cart_remove' cart_item.product.id %}" class="custom_a"><i class="fa fa-minus custom_icon"></i></a>
+        &nbsp;<a href="{% url 'cart:full_remove' cart_item.product.id %}" class="custom_icon"><i class="fa fa-trash custom_icon"></i></a>
+      </td>
+      {% else %}
+      <td>
+        &nbsp;<a href="{% url 'cart:cart_remove' cart_item.product.id %}" class="custom_a"><i class="fa fa-minus custom_icon"></i></a>
+        &nbsp;<a href="{% url 'cart:full_remove' cart_item.product.id %}" class="custom_icon"><i class="fa fa-trash custom_icon"></i></a>
+      </td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+
+    </tbody>
+    </table>
+  </div>
+  <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-center">
+    <table class="table my_custom_table">
+      <thead class="my_custom_thead">
+      <tr>
+        <th>
+          Check Out
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>
+              <h4>Cart Summary</h4>
+          Please review your  cart summary before place the order.
+        </td>
+      </tr>
+      <tr>
+        <td class="text-left">
+          <ul>
+    {% for cart_item in cart_items %}
+        <li>Product: {{ cart_item.product.name }}, Quantity: {{ cart_item.quantity }}, Total: ${{ cart_item.sub_total }}</li>
+    {% endfor %}
+    </ul>
+           <ul><li>Subtotal: <strong>${{total}}</strong></li> </ul>
+
+             <ul><li><p> Total Quantity: ${{ total_quantity }}</p></li></ul>
+           <ul><li><p>Discount details</p></li></ul>
+          <ul><li>{% if discount_name %}
+        <p>Discount Applied: {{ discount_name }}, Amount: ${{ discount_amount }}</p>
+    {% endif %}</li></ul>
+
+          <ul><li><p>Shipping Fee: ${{ shipping_fee }}</p></li></ul>
+
+          <ul><li><p>Gift Wrap Fee: ${{ gift_wrap_fee }}</p></li></ul>
+
+          <ul><li><h3>Total: ${{ grand_total }}</h3></li></ul>
+
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+    <div class="mx-auto">
+            <a href="{% url 'shop:allProdCat' %}" class="btn btn-secondary btn-block my_custom_button">Place order</a>
+    </div>
+    <div class="mx-auto">
+      <a href="{% url 'shop:allProdCat' %}" class="btn btn-secondary btn-block my_custom_button"> Continue your Shopping</a>
+    </div>
+{% endif %}
+  </div>
+</div>
+
+{% endblock %}
